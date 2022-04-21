@@ -7,38 +7,36 @@ import (
 )
 
 type Contact struct {
-	ID         uint `gorm:"primaryKey"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  gorm.DeletedAt `gorm:"index"`
+	ID        uint `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	//or company
 	IsPerson   bool
-	Name       string
-	SecondName string
+	Name       string `gorm:"size:32"`
+	SecondName string `gorm:"size:32"`
 	//implement
-	ResponsibleID uint
+	ResponsibleID *uint
 	Responsible   User `gorm:"foreignKey:ResponsibleID"`
-	CreatedID     uint
+	CreatedID     *uint
 	Created       User `gorm:"foreignKey:CreatedID"`
 
-	Tags        []Tag `gorm:"many2many:lead_tag;"`
+	Tags        []Tag `gorm:"many2many:contacts_tags;"`
 	Tasks       []Task
-	Phone       string
-	SecondPhone string
-	Email       string
-	SecondEmail string
-	URL         string
+	Phone       string `gorm:"size:32"`
+	SecondPhone string `gorm:"size:32"`
+	Email       string `gorm:"size:128"`
+	SecondEmail string `gorm:"size:128"`
+	URL         string `gorm:"size:128"`
 
-	City    string
-	Address string
+	City    string `gorm:"size:128"`
+	Address string `gorm:"size:256"`
 
-	SourceID uint
+	SourceID *uint8
 	Source   Source `gorm:"foreignKey:SourceID"`
-	Position string
+	Position string `gorm:"size:128"`
 
-	//google analytics
-	CID string
-	UID string
-	TID string
+	Analytics Analytics `gorm:"embedded;embeddedPrefix:analytics_"`
 }
 
 type Lead struct {
@@ -46,39 +44,43 @@ type Lead struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string
-	Budget    int
-	Profit    int
+	Name      string         `gorm:"size:64"`
+	Budget    uint32
+	Profit    int32
 
 	//implement
-	ResponsibleID uint
+	ResponsibleID *uint
 	Responsible   User `gorm:"foreignKey:ResponsibleID"`
-	CreatedID     uint
+	CreatedID     *uint
 	Created       User `gorm:"foreignKey:CreatedID"`
-	StepID        uint
+	StepID        *uint8
 	Step          Step
 	//implement
-	ProductID uint
+	ProductID *uint32
 	Product   Product
 	//implement
-	ManufacturerID uint
+	ManufacturerID *uint16
 	Manufacturer   Manufacturer
-	SourceID       uint
-	Source         Source
+	SourceID       *uint8
+	Source         *Source
 	//google analytics
-	Tags  []Tag `gorm:"many2many:lead_tag;"`
+	Tags  []Tag `gorm:"many2many:leads_tags;"`
 	Tasks []Task
 
-	CID string
-	UID string
-	TID string
+	Analytics Analytics `gorm:"embedded;embeddedPrefix:analytics_"`
+}
 
-	UtmID       string
-	UtmSource   string
-	UtmMedium   string
-	UtmCampaign string
+type Analytics struct {
+	CID string `gorm:"size:64"`
+	UID string `gorm:"size:64"`
+	TID string `gorm:"size:64"`
 
-	Domain string
+	UtmID       string `gorm:"size:64"`
+	UtmSource   string `gorm:"size:64"`
+	UtmMedium   string `gorm:"size:64"`
+	UtmCampaign string `gorm:"size:64"`
+
+	Domain string `gorm:"size:128"`
 }
 
 type User struct {
@@ -86,26 +88,26 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string
-	Email     string `gorm:"unique"`
+	Name      string         `gorm:"size:32"`
+	Email     string         `gorm:"size:128; unique"`
 	// Events    []Event
-	RoleID uint
+	RoleID *uint8
 	Role   Role `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type Role struct {
-	ID   uint   `gorm:"primaryKey"`
-	Role string `gorm:"unique"`
+	ID   uint8  `gorm:"primaryKey"`
+	Role string `gorm:"unique;size:32"`
 }
 
 type Step struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint8 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"unique"`
+	Name      string         `gorm:"unique;size:32"`
 	//1st, 2nd etc
-	Order uint
+	Order uint8
 }
 
 type Event struct {
@@ -122,14 +124,16 @@ type Event struct {
 	ContactID uint
 	TaskID    uint
 	LeadID    uint
+
+	Description string `gorm:"size:256"`
 }
 
 type Tag struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint8 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"unique"`
+	Name      string         `gorm:"size:32;unique"`
 }
 
 //Task & Notice
@@ -140,7 +144,7 @@ type Task struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	DeadLine  time.Time
 	//if not - notice
-	TaskTypeID uint
+	TaskTypeID *uint8
 	TaskType   TaskType
 
 	UserID    uint
@@ -148,37 +152,37 @@ type Task struct {
 	ContactID uint
 
 	//just links
-	Files string
+	Files string `gorm:"size:512"`
 }
 
 type TaskType struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint8 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"unique"`
+	Name      string         `gorm:"size:32;unique"`
 }
 
 type Source struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint8 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"unique"`
+	Name      string         `gorm:"size:32;unique"`
 }
 
 type Product struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint32 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"unique"`
+	Name      string         `gorm:"size:64;unique"`
 }
 
 type Manufacturer struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint16 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"unique"`
+	Name      string         `gorm:"size:32;unique"`
 }

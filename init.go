@@ -28,6 +28,12 @@ func Init(dsn string) (err error) {
 		}
 	}
 
+	if !db.Migrator().HasTable("leads") {
+		if err := db.AutoMigrate(&Lead{}); err != nil {
+			return err
+		}
+	}
+
 	// for _, b := range banks_data {
 	// 	db.Create(&b)
 	// }
