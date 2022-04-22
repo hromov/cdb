@@ -1,6 +1,7 @@
 package cdb
 
 import (
+	"cdb"
 	"log"
 	"testing"
 	"unicode"
@@ -18,7 +19,7 @@ func isInt(s string) bool {
 }
 
 func BenchmarkFullSearch(b *testing.B) {
-	if err := Init(dsn); err != nil {
+	if err := cdb.Init(dsn); err != nil {
 		log.Fatalf("Cant init data base error: %s", err.Error())
 	}
 	for i := 0; i < b.N; i++ {

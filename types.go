@@ -50,6 +50,9 @@ type Lead struct {
 	Profit    int32
 
 	//implement
+	ContactID *uint
+	Contact   Contact `gorm:"foreignKey:ContactID"`
+
 	ResponsibleID *uint
 	Responsible   User `gorm:"foreignKey:ResponsibleID"`
 	CreatedID     *uint

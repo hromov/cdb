@@ -34,6 +34,19 @@ func Init(dsn string) (err error) {
 		}
 	}
 
+	if !db.Migrator().HasTable("tasks") {
+		if err := db.AutoMigrate(&Task{}); err != nil {
+			return err
+		}
+	}
+
+	// var lead Lead
+	// log.Println(db.Model(&lead).Association("Contacts"))
+	// // `user` is the source model, it must contains primary key
+	// // `Languages` is a relationship's field name
+	// // If the above two requirements matched, the AssociationMode should be started successfully, or it should return error
+	// log.Println(db.Model(&lead).Association("Contacts").Error)
+
 	// for _, b := range banks_data {
 	// 	db.Create(&b)
 	// }
