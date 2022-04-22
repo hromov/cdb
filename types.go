@@ -43,6 +43,7 @@ type Lead struct {
 	ID        uint `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	ClosedAt  *time.Time     `gorm:"index"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Name      string         `gorm:"size:64"`
 	Budget    uint32
