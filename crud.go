@@ -20,3 +20,10 @@ func Delete(i interface{}) (interface{}, error) {
 	}
 	return i, nil
 }
+
+func List(limit, offset int) (list []interface{}, err error) {
+	if result := db.Limit(limit).Offset(offset).Find(&list); result.Error != nil {
+		return nil, result.Error
+	}
+	return list, nil
+}
