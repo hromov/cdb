@@ -8,9 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// type CDB struct {
-// 	db *gorm.DB
-// }
 type CDB struct {
 	DB *gorm.DB
 }
