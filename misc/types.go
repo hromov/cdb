@@ -1,78 +1,10 @@
-package cdb
+package misc
 
 import (
 	"time"
 
 	"gorm.io/gorm"
 )
-
-type Contact struct {
-	ID        uint `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-	//or company
-	IsPerson   bool
-	Name       string `gorm:"size:32"`
-	SecondName string `gorm:"size:32"`
-	//implement
-	ResponsibleID *uint
-	Responsible   User `gorm:"foreignKey:ResponsibleID"`
-	CreatedID     *uint
-	Created       User `gorm:"foreignKey:CreatedID"`
-
-	Tags        []Tag `gorm:"many2many:contacts_tags;"`
-	Tasks       []Task
-	Phone       string `gorm:"size:32"`
-	SecondPhone string `gorm:"size:32"`
-	Email       string `gorm:"size:128"`
-	SecondEmail string `gorm:"size:128"`
-	URL         string `gorm:"size:128"`
-
-	City    string `gorm:"size:128"`
-	Address string `gorm:"size:256"`
-
-	SourceID *uint8
-	Source   Source `gorm:"foreignKey:SourceID"`
-	Position string `gorm:"size:128"`
-
-	Analytics Analytics `gorm:"embedded;embeddedPrefix:analytics_"`
-}
-
-type Lead struct {
-	ID        uint `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	ClosedAt  *time.Time     `gorm:"index"`
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Name      string         `gorm:"size:64"`
-	Budget    uint32
-	Profit    int32
-
-	//implement
-	ContactID *uint
-	Contact   Contact `gorm:"foreignKey:ContactID"`
-
-	ResponsibleID *uint
-	Responsible   User `gorm:"foreignKey:ResponsibleID"`
-	CreatedID     *uint
-	Created       User `gorm:"foreignKey:CreatedID"`
-	StepID        *uint8
-	Step          Step
-	//implement
-	ProductID *uint32
-	Product   Product
-	//implement
-	ManufacturerID *uint16
-	Manufacturer   Manufacturer
-	SourceID       *uint8
-	Source         *Source
-	//google analytics
-	Tags  []Tag `gorm:"many2many:leads_tags;"`
-	Tasks []Task
-
-	Analytics Analytics `gorm:"embedded;embeddedPrefix:analytics_"`
-}
 
 type Analytics struct {
 	CID string `gorm:"size:64"`

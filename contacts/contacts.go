@@ -1,16 +1,57 @@
-package cdb
+package contacts
 
 import (
+	"cdb/misc"
 	"database/sql"
+	"time"
 	"unicode"
+
+	"gorm.io/gorm"
 )
 
 const fullSearch = "name LIKE @query OR second_name LIKE @query OR phone LIKE @query OR second_phone LIKE @query OR email LIKE @query OR second_email LIKE @query OR url LIKE @query OR city LIKE @query OR address LIKE @query OR position LIKE @query"
 const phonesOnly = "phone LIKE @query OR second_phone LIKE @query"
 
+type Contact struct {
+	ID        uint `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	//or company
+	IsPerson   bool
+	Name       string `gorm:"size:32"`
+	SecondName string `gorm:"size:32"`
+	//implement
+	ResponsibleID *uint
+	Responsible   misc.User `gorm:"foreignKey:ResponsibleID"`
+	CreatedID     *uint
+	Created       misc.User `gorm:"foreignKey:CreatedID"`
+
+	Tags        []misc.Tag `gorm:"many2many:contacts_tags;"`
+	Tasks       []misc.Task
+	Phone       string `gorm:"size:32"`
+	SecondPhone string `gorm:"size:32"`
+	Email       string `gorm:"size:128"`
+	SecondEmail string `gorm:"size:128"`
+	URL         string `gorm:"size:128"`
+
+	City    string `gorm:"size:128"`
+	Address string `gorm:"size:256"`
+
+	SourceID *uint8
+	Source   misc.Source `gorm:"foreignKey:SourceID"`
+	Position string      `gorm:"size:128"`
+
+	Analytics misc.Analytics `gorm:"embedded;embeddedPrefix:analytics_"`
+}
+
 type ContactsResponse struct {
 	Contacts []Contact
 	Total    int64
+}
+
+type Contacts struct {
+	DB *gorm.DB
 }
 
 func digitsOnly(s string) bool {
@@ -22,7 +63,7 @@ func digitsOnly(s string) bool {
 	return true
 }
 
-func Contacts(limit, offset int, query string) (*ContactsResponse, error) {
+func (c *Contacts) List(limit, offset int, query string) (*ContactsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
 	cr := &ContactsResponse{}
 	if query != "" {
@@ -32,23 +73,23 @@ func Contacts(limit, offset int, query string) (*ContactsResponse, error) {
 		} else {
 			searchType = fullSearch
 		}
-		if result := db.Limit(limit).Offset(offset).Where(searchType, sql.Named("query", "%"+query+"%")).Order("updated_at desc").Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
+		if result := c.DB.Limit(limit).Offset(offset).Where(searchType, sql.Named("query", "%"+query+"%")).Order("updated_at desc").Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
 			return nil, result.Error
 		}
 		return cr, nil
 	}
 
-	if result := db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
+	if result := c.DB.Order("updated_at desc").Limit(limit).Offset(offset).Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
 		return nil, result.Error
 	}
 	return cr, nil
 }
 
-func ContactByID(ID uint64) (*Contact, error) {
+func (c *Contacts) ByID(ID uint64) (*Contact, error) {
 	// log.Println(limit, offset, query, query == "")
 	var contact Contact
 
-	if result := db.Find(&contact, ID); result.Error != nil {
+	if result := c.DB.Find(&contact, ID); result.Error != nil {
 		return nil, result.Error
 	}
 	return &contact, nil

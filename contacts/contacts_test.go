@@ -1,13 +1,8 @@
-package cdb
+package contacts
 
 import (
-	"cdb"
-	"log"
-	"testing"
 	"unicode"
 )
-
-const dsn = "root:password@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
 
 func isInt(s string) bool {
 	for _, c := range s {
@@ -18,17 +13,17 @@ func isInt(s string) bool {
 	return true
 }
 
-func BenchmarkFullSearch(b *testing.B) {
-	if err := cdb.Init(dsn); err != nil {
-		log.Fatalf("Cant init data base error: %s", err.Error())
-	}
-	for i := 0; i < b.N; i++ {
-		_, err := Contacts(50, 0, "0674430")
-		if err != nil {
-			panic(err)
-		}
-	}
-}
+// func BenchmarkFullSearch(b *testing.B) {
+// 	if err := cdb.Init(dsn); err != nil {
+// 		log.Fatalf("Cant init data base error: %s", err.Error())
+// 	}
+// 	for i := 0; i < b.N; i++ {
+// 		_, err := Contacts(50, 0, "0674430")
+// 		if err != nil {
+// 			panic(err)
+// 		}
+// 	}
+// }
 
 // func BenchmarkPhonesIsIntSearch(b *testing.B) {
 // 	if err := Init(dsn); err != nil {

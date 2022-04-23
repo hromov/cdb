@@ -1,6 +1,9 @@
 package cdb
 
 import (
+	"cdb/contacts"
+	"cdb/leads"
+	"cdb/misc"
 	"errors"
 	"fmt"
 
@@ -8,35 +11,40 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+type CDB struct {
+	db *gorm.DB
+}
 
-func Init(dsn string) (err error) {
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+// var db *gorm.DB
+const dsn = "root:password@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
+
+func Init(dsn string) (*CDB, error) {
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return errors.New(fmt.Sprintf("failed to connect database error: %s", err.Error()))
+		return nil, errors.New(fmt.Sprintf("failed to connect database error: %s", err.Error()))
 	}
 
 	// if table exist - do nothink, if not - create init structure with test data
 	if !db.Migrator().HasTable("roles") {
-		if err := db.AutoMigrate(&Role{}); err != nil {
-			return err
+		if err := db.AutoMigrate(&misc.Role{}); err != nil {
+			return nil, err
 		}
 	}
 	if !db.Migrator().HasTable("contacts") {
-		if err := db.AutoMigrate(&Contact{}); err != nil {
-			return err
+		if err := db.AutoMigrate(&contacts.Contact{}); err != nil {
+			return nil, err
 		}
 	}
 
 	if !db.Migrator().HasTable("leads") {
-		if err := db.AutoMigrate(&Lead{}); err != nil {
-			return err
+		if err := db.AutoMigrate(&leads.Lead{}); err != nil {
+			return nil, err
 		}
 	}
 
 	if !db.Migrator().HasTable("tasks") {
-		if err := db.AutoMigrate(&Task{}); err != nil {
-			return err
+		if err := db.AutoMigrate(&misc.Task{}); err != nil {
+			return nil, err
 		}
 	}
 
@@ -50,5 +58,5 @@ func Init(dsn string) (err error) {
 	// for _, b := range banks_data {
 	// 	db.Create(&b)
 	// }
-	return nil
+	return &CDB{db}, nil
 }
