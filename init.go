@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/hromov/cdb/contacts"
+	"github.com/hromov/cdb/leads"
+	"github.com/hromov/cdb/misc"
 	"github.com/hromov/cdb/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -15,8 +18,17 @@ type CDB struct {
 	*gorm.DB
 }
 
-// var db *gorm.DB
-// const dsn = "root:password@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
+func (db *CDB) Contacts() *contacts.Contacts {
+	return &contacts.Contacts{DB: db.DB}
+}
+
+func (db *CDB) Leads() *leads.Leads {
+	return &leads.Leads{DB: db.DB}
+}
+
+func (db *CDB) Misc() *misc.Misc {
+	return &misc.Misc{DB: db.DB}
+}
 
 func Init(dsn string) (*CDB, error) {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
