@@ -1,8 +1,7 @@
 package leads
 
 import (
-	"github.com/hromov/cdb"
-
+	"github.com/hromov/cdb/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -11,9 +10,9 @@ type Leads struct {
 	*gorm.DB
 }
 
-func (l *Leads) List(limit, offset int, query string) (*cdb.LeadsResponse, error) {
+func (l *Leads) List(limit, offset int, query string) (*models.LeadsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
-	cr := &cdb.LeadsResponse{}
+	cr := &models.LeadsResponse{}
 	//How to make joins work?.Joins("Contacts")
 	if query != "" {
 		if result := l.DB.Preload(clause.Associations).Order("updated_at desc").Where("name LIKE ?", "%"+query+"%").
@@ -29,9 +28,9 @@ func (l *Leads) List(limit, offset int, query string) (*cdb.LeadsResponse, error
 	return cr, nil
 }
 
-func (l *Leads) ByContact(ID uint) (*cdb.LeadsResponse, error) {
+func (l *Leads) ByContact(ID uint) (*models.LeadsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
-	cr := &cdb.LeadsResponse{}
+	cr := &models.LeadsResponse{}
 	//How to make joins work?.Joins("Contacts")
 	if result := l.DB.Preload(clause.Associations).Order("updated_at desc").Where("contact_id = ?", ID).Find(&cr.Leads).Count(&cr.Total); result.Error != nil {
 		return nil, result.Error
@@ -39,9 +38,9 @@ func (l *Leads) ByContact(ID uint) (*cdb.LeadsResponse, error) {
 	return cr, nil
 }
 
-func (l *Leads) ByID(ID uint64) (*cdb.Lead, error) {
+func (l *Leads) ByID(ID uint64) (*models.Lead, error) {
 	// log.Println(limit, offset, query, query == "")
-	var lead cdb.Lead
+	var lead models.Lead
 
 	if result := l.DB.Preload(clause.Associations).First(&lead, ID); result.Error != nil {
 		return nil, result.Error

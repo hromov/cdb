@@ -1,4 +1,4 @@
-module cdb
+module github.com/hromov/cdb
 
 go 1.14
 

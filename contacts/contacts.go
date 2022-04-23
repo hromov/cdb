@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"unicode"
 
-	"github.com/hromov/cdb"
-
+	"github.com/hromov/cdb/models"
 	"gorm.io/gorm"
 )
 
@@ -25,9 +24,9 @@ func digitsOnly(s string) bool {
 	return true
 }
 
-func (c *Contacts) List(limit, offset int, query string) (*cdb.ContactsResponse, error) {
+func (c *Contacts) List(limit, offset int, query string) (*models.ContactsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
-	cr := &cdb.ContactsResponse{}
+	cr := &models.ContactsResponse{}
 	if query != "" {
 		searchType := ""
 		if digitsOnly(query) {
@@ -47,9 +46,9 @@ func (c *Contacts) List(limit, offset int, query string) (*cdb.ContactsResponse,
 	return cr, nil
 }
 
-func (c *Contacts) ByID(ID uint64) (*cdb.Contact, error) {
+func (c *Contacts) ByID(ID uint64) (*models.Contact, error) {
 	// log.Println(limit, offset, query, query == "")
-	var contact cdb.Contact
+	var contact models.Contact
 
 	if result := c.DB.First(&contact, ID); result.Error != nil {
 		return nil, result.Error

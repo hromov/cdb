@@ -4,9 +4,12 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/hromov/cdb/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+const dsnForTests = "root:password@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
 
 type CDB struct {
 	*gorm.DB
@@ -23,24 +26,24 @@ func Init(dsn string) (*CDB, error) {
 
 	// if table exist - do nothink, if not - create init structure with test data
 	if !db.Migrator().HasTable("roles") {
-		if err := db.AutoMigrate(&Role{}); err != nil {
+		if err := db.AutoMigrate(&models.Role{}); err != nil {
 			return nil, err
 		}
 	}
 	if !db.Migrator().HasTable("contacts") {
-		if err := db.AutoMigrate(&Contact{}); err != nil {
+		if err := db.AutoMigrate(&models.Contact{}); err != nil {
 			return nil, err
 		}
 	}
 
 	if !db.Migrator().HasTable("leads") {
-		if err := db.AutoMigrate(&Lead{}); err != nil {
+		if err := db.AutoMigrate(&models.Lead{}); err != nil {
 			return nil, err
 		}
 	}
 
 	if !db.Migrator().HasTable("tasks") {
-		if err := db.AutoMigrate(&Task{}); err != nil {
+		if err := db.AutoMigrate(&models.Task{}); err != nil {
 			return nil, err
 		}
 	}
