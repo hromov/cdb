@@ -2,54 +2,15 @@ package contacts
 
 import (
 	"database/sql"
-	"time"
 	"unicode"
 
-	"github.com/hromov/cdb/misc"
+	"github.com/hromov/cdb"
 
 	"gorm.io/gorm"
 )
 
 const fullSearch = "name LIKE @query OR second_name LIKE @query OR phone LIKE @query OR second_phone LIKE @query OR email LIKE @query OR second_email LIKE @query OR url LIKE @query OR city LIKE @query OR address LIKE @query OR position LIKE @query"
 const phonesOnly = "phone LIKE @query OR second_phone LIKE @query"
-
-type Contact struct {
-	ID        uint `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-	//or company
-	IsPerson   bool
-	Name       string `gorm:"size:32"`
-	SecondName string `gorm:"size:32"`
-	//implement
-	ResponsibleID *uint
-	Responsible   misc.User `gorm:"foreignKey:ResponsibleID"`
-	CreatedID     *uint
-	Created       misc.User `gorm:"foreignKey:CreatedID"`
-
-	Tags        []misc.Tag `gorm:"many2many:contacts_tags;"`
-	Tasks       []misc.Task
-	Phone       string `gorm:"size:32"`
-	SecondPhone string `gorm:"size:32"`
-	Email       string `gorm:"size:128"`
-	SecondEmail string `gorm:"size:128"`
-	URL         string `gorm:"size:128"`
-
-	City    string `gorm:"size:128"`
-	Address string `gorm:"size:256"`
-
-	SourceID *uint8
-	Source   misc.Source `gorm:"foreignKey:SourceID"`
-	Position string      `gorm:"size:128"`
-
-	Analytics misc.Analytics `gorm:"embedded;embeddedPrefix:analytics_"`
-}
-
-type ContactsResponse struct {
-	Contacts []Contact
-	Total    int64
-}
 
 type Contacts struct {
 	DB *gorm.DB
@@ -64,9 +25,9 @@ func digitsOnly(s string) bool {
 	return true
 }
 
-func (c *Contacts) List(limit, offset int, query string) (*ContactsResponse, error) {
+func (c *Contacts) List(limit, offset int, query string) (*cdb.ContactsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
-	cr := &ContactsResponse{}
+	cr := &cdb.ContactsResponse{}
 	if query != "" {
 		searchType := ""
 		if digitsOnly(query) {
@@ -86,9 +47,9 @@ func (c *Contacts) List(limit, offset int, query string) (*ContactsResponse, err
 	return cr, nil
 }
 
-func (c *Contacts) ByID(ID uint64) (*Contact, error) {
+func (c *Contacts) ByID(ID uint64) (*cdb.Contact, error) {
 	// log.Println(limit, offset, query, query == "")
-	var contact Contact
+	var contact cdb.Contact
 
 	if result := c.DB.Find(&contact, ID); result.Error != nil {
 		return nil, result.Error

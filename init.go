@@ -4,10 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hromov/cdb/contacts"
-	"github.com/hromov/cdb/leads"
-	"github.com/hromov/cdb/misc"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -17,18 +13,6 @@ import (
 // }
 type CDB struct {
 	DB *gorm.DB
-}
-
-func (c *CDB) Contacts() *contacts.Contacts {
-	return &contacts.Contacts{DB: c.DB}
-}
-
-func (c *CDB) Leads() *leads.Leads {
-	return &leads.Leads{DB: c.DB}
-}
-
-func (c *CDB) Misc() *misc.Misc {
-	return &misc.Misc{DB: c.DB}
 }
 
 // var db *gorm.DB
@@ -42,24 +26,24 @@ func Init(dsn string) (*CDB, error) {
 
 	// if table exist - do nothink, if not - create init structure with test data
 	if !db.Migrator().HasTable("roles") {
-		if err := db.AutoMigrate(&misc.Role{}); err != nil {
+		if err := db.AutoMigrate(&Role{}); err != nil {
 			return nil, err
 		}
 	}
 	if !db.Migrator().HasTable("contacts") {
-		if err := db.AutoMigrate(&contacts.Contact{}); err != nil {
+		if err := db.AutoMigrate(&Contact{}); err != nil {
 			return nil, err
 		}
 	}
 
 	if !db.Migrator().HasTable("leads") {
-		if err := db.AutoMigrate(&leads.Lead{}); err != nil {
+		if err := db.AutoMigrate(&Lead{}); err != nil {
 			return nil, err
 		}
 	}
 
 	if !db.Migrator().HasTable("tasks") {
-		if err := db.AutoMigrate(&misc.Task{}); err != nil {
+		if err := db.AutoMigrate(&Task{}); err != nil {
 			return nil, err
 		}
 	}
