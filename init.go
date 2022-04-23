@@ -1,22 +1,38 @@
 package cdb
 
 import (
-	"cdb/contacts"
-	"cdb/leads"
-	"cdb/misc"
 	"errors"
 	"fmt"
+
+	"github.com/hromov/cdb/contacts"
+	"github.com/hromov/cdb/leads"
+	"github.com/hromov/cdb/misc"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
+// type CDB struct {
+// 	db *gorm.DB
+// }
 type CDB struct {
-	db *gorm.DB
+	DB *gorm.DB
+}
+
+func (c *CDB) Contacts() *contacts.Contacts {
+	return &contacts.Contacts{DB: c.DB}
+}
+
+func (c *CDB) Leads() *leads.Leads {
+	return &leads.Leads{DB: c.DB}
+}
+
+func (c *CDB) Misc() *misc.Misc {
+	return &misc.Misc{DB: c.DB}
 }
 
 // var db *gorm.DB
-const dsn = "root:password@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
+// const dsn = "root:password@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
 
 func Init(dsn string) (*CDB, error) {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -58,5 +74,5 @@ func Init(dsn string) (*CDB, error) {
 	// for _, b := range banks_data {
 	// 	db.Create(&b)
 	// }
-	return &CDB{db}, nil
+	return &CDB{DB: db}, nil
 }

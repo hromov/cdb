@@ -1,9 +1,9 @@
 package cdb
 
 import (
-	"cdb/contacts"
-	"cdb/leads"
-	"cdb/misc"
+	"github.com/hromov/cdb/contacts"
+	"github.com/hromov/cdb/leads"
+	"github.com/hromov/cdb/misc"
 )
 
 type Contacts interface {

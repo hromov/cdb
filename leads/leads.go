@@ -1,9 +1,10 @@
 package leads
 
 import (
-	"cdb/contacts"
-	"cdb/misc"
 	"time"
+
+	"github.com/hromov/cdb/contacts"
+	"github.com/hromov/cdb/misc"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

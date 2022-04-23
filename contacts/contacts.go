@@ -1,10 +1,11 @@
 package contacts
 
 import (
-	"cdb/misc"
 	"database/sql"
 	"time"
 	"unicode"
+
+	"github.com/hromov/cdb/misc"
 
 	"gorm.io/gorm"
 )
