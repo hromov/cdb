@@ -51,7 +51,7 @@ func (c *Contacts) ByID(ID uint64) (*cdb.Contact, error) {
 	// log.Println(limit, offset, query, query == "")
 	var contact cdb.Contact
 
-	if result := c.DB.Find(&contact, ID); result.Error != nil {
+	if result := c.DB.First(&contact, ID); result.Error != nil {
 		return nil, result.Error
 	}
 	return &contact, nil

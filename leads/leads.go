@@ -43,7 +43,7 @@ func (l *Leads) ByID(ID uint64) (*cdb.Lead, error) {
 	// log.Println(limit, offset, query, query == "")
 	var lead cdb.Lead
 
-	if result := l.DB.Find(&lead, ID); result.Error != nil {
+	if result := l.DB.Preload(clause.Associations).First(&lead, ID); result.Error != nil {
 		return nil, result.Error
 	}
 	return &lead, nil
