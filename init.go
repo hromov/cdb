@@ -18,6 +18,7 @@ type CDB struct {
 	*gorm.DB
 }
 
+//test part
 func (db *CDB) Contacts() *contacts.Contacts {
 	return &contacts.Contacts{DB: db.DB}
 }
