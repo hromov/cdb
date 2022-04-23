@@ -21,7 +21,7 @@ func (c *CDB) Delete(i interface{}) (interface{}, error) {
 	return i, nil
 }
 
-func (c *CDB) List(limit, offset int) (list []interface{}, err error) {
+func (c *CDB) List(list []interface{}, limit, offset int) ([]interface{}, error) {
 	if result := c.DB.Limit(limit).Offset(offset).Find(&list); result.Error != nil {
 		return nil, result.Error
 	}
