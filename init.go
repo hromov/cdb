@@ -9,7 +9,7 @@ import (
 )
 
 type CDB struct {
-	DB *gorm.DB
+	*gorm.DB
 }
 
 // var db *gorm.DB

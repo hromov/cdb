@@ -7,7 +7,7 @@ import (
 )
 
 type Misc struct {
-	DB *gorm.DB
+	*gorm.DB
 }
 
 func (m *Misc) Sources() ([]cdb.Source, error) {

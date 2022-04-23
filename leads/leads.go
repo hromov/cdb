@@ -8,7 +8,7 @@ import (
 )
 
 type Leads struct {
-	DB *gorm.DB
+	*gorm.DB
 }
 
 func (l *Leads) List(limit, offset int, query string) (*cdb.LeadsResponse, error) {

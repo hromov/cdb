@@ -13,7 +13,7 @@ const fullSearch = "name LIKE @query OR second_name LIKE @query OR phone LIKE @q
 const phonesOnly = "phone LIKE @query OR second_phone LIKE @query"
 
 type Contacts struct {
-	DB *gorm.DB
+	*gorm.DB
 }
 
 func digitsOnly(s string) bool {
