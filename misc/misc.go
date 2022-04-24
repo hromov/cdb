@@ -118,16 +118,25 @@ func (m *Misc) Tag(ID uint8) (*models.Tag, error) {
 	var item models.Tag
 	if result := m.DB.First(&item, ID); result.Error != nil {
 		return nil, result.Error
+
 	}
 	return &item, nil
 }
 
-func (m *Misc) TasksByParent(ID uint) ([]models.Task, error) {
-	var items []models.Task
-	if result := m.DB.Preload(clause.Associations).Order("created_at desc").Where("ParentID = ?", ID).Find(&items); result.Error != nil {
+func (m *Misc) Tasks(filter models.ListFilter) (*models.TasksResponse, error) {
+	cr := &models.TasksResponse{}
+	//How to make joins work?.Joins("Contacts")
+	q := m.DB.Joins("task_types").Order("created_at desc").Limit(filter.Limit).Offset(filter.Offset)
+	if filter.Query != "" {
+		q = q.Where("name LIKE ?", "%"+filter.Query+"%")
+	}
+	if filter.ParentID != 0 {
+		q = q.Where("parent_id = ?", filter.ParentID)
+	}
+	if result := q.Find(&cr.Tasks).Count(&cr.Total); result.Error != nil {
 		return nil, result.Error
 	}
-	return items, nil
+	return cr, nil
 }
 
 func (m *Misc) Task(ID uint) (*models.Task, error) {

@@ -8,12 +8,13 @@ import (
 )
 
 type ListFilter struct {
-	Limit     uint64
-	Offset    uint64
+	Limit     int
+	Offset    int
 	LeadID    uint64
 	ContactID uint64
 	TagID     uint8
 	Query     string
+	ParentID  uint64
 }
 
 type Lead struct {
@@ -171,6 +172,11 @@ type Task struct {
 	//just links
 	Files       string `gorm:"size:512"`
 	Description string `gorm:"size:1024"`
+}
+
+type TasksResponse struct {
+	Tasks []Task
+	Total int64
 }
 
 type TaskType struct {
