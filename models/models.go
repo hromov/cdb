@@ -7,23 +7,32 @@ import (
 	"gorm.io/gorm"
 )
 
+type ListFilter struct {
+	Limit     uint64
+	Offset    uint64
+	LeadID    uint64
+	ContactID uint64
+	TagID     uint8
+	Query     string
+}
+
 type Lead struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint64 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	ClosedAt  *time.Time     `gorm:"index"`
+	ClosedAt  sql.NullTime   `gorm:"index"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Name      string         `gorm:"size:64"`
 	Budget    uint32
 	Profit    int32
 
 	//implement
-	ContactID *uint
+	ContactID *uint64
 	Contact   Contact `gorm:"foreignKey:ContactID"`
 
-	ResponsibleID *uint
+	ResponsibleID *uint64
 	Responsible   User `gorm:"foreignKey:ResponsibleID"`
-	CreatedID     *uint
+	CreatedID     *uint64
 	Created       User `gorm:"foreignKey:CreatedID"`
 	StepID        *uint8
 	Step          Step
@@ -34,7 +43,7 @@ type Lead struct {
 	ManufacturerID *uint16
 	Manufacturer   Manufacturer
 	SourceID       *uint8
-	Source         *Source
+	Source         Source
 	//google analytics
 	Tags []Tag `gorm:"many2many:leads_tags;"`
 	// Tasks []Task
@@ -48,7 +57,7 @@ type LeadsResponse struct {
 }
 
 type Contact struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint64 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
@@ -57,9 +66,9 @@ type Contact struct {
 	Name       string `gorm:"size:32"`
 	SecondName string `gorm:"size:32"`
 	//implement
-	ResponsibleID *uint
+	ResponsibleID *uint64
 	Responsible   User `gorm:"foreignKey:ResponsibleID"`
-	CreatedID     *uint
+	CreatedID     *uint64
 	Created       User `gorm:"foreignKey:CreatedID"`
 
 	Tags []Tag `gorm:"many2many:contacts_tags;"`
@@ -99,7 +108,7 @@ type Analytics struct {
 }
 
 type User struct {
-	ID        uint `gorm:"primaryKey"`
+	ID        uint64 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
@@ -129,20 +138,11 @@ type Step struct {
 }
 
 type Event struct {
-	ID        uint `gorm:"primaryKey"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-
-	// Implement
-	UserID uint
-	// User   User
-
-	// And corresponding ID, one of it is not null - so we know how to show changes in contact, leas or task card
-	ContactID uint
-	TaskID    uint
-	LeadID    uint
-
+	ID          uint64 `gorm:"primaryKey"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	ParentID    uint64
 	Description string `gorm:"size:256"`
 }
 
@@ -156,8 +156,8 @@ type Tag struct {
 
 //Task & Notice
 type Task struct {
-	ID        uint `gorm:"primaryKey"`
-	ParentID  uint `gorm:"index"`
+	ID        uint64 `gorm:"primaryKey"`
+	ParentID  uint64 `gorm:"index"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`

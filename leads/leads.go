@@ -10,45 +10,25 @@ type Leads struct {
 	*gorm.DB
 }
 
-func (l *Leads) List(limit, offset int, query string) (*models.LeadsResponse, error) {
+func (l *Leads) List(filter models.ListFilter) (*models.LeadsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
 	cr := &models.LeadsResponse{}
 	//How to make joins work?.Joins("Contacts")
-	if query != "" {
-		q := l.DB.Preload(clause.Associations).Order("updated_at desc")
-		q = q.Where("name LIKE ?", "%"+query+"%")
-		q = q.Limit(limit).Offset(offset).Find(&cr.Leads)
-		if result := q.Count(&cr.Total); result.Error != nil {
-			return nil, result.Error
-
-		}
-		return cr, nil
+	q := l.DB.Preload(clause.Associations).Order("updated_at desc").Limit(int(filter.Limit)).Offset(int(filter.Offset))
+	if filter.Query != "" {
+		q = q.Where("name LIKE ?", "%"+filter.Query+"%")
 	}
-	if result := l.DB.Preload(clause.Associations).Order("updated_at desc").Limit(limit).Offset(offset).Find(&cr.Leads).Count(&cr.Total); result.Error != nil {
-		return nil, result.Error
+	if filter.ContactID != 0 {
+		q = q.Where("contact_id = ?", filter.ContactID)
 	}
-	return cr, nil
-}
-
-func (l *Leads) ByTag(limit, offset int, TagID uint8) (*models.LeadsResponse, error) {
-	cr := &models.LeadsResponse{}
-
-	IDs := []uint{}
-	l.DB.Raw("select lead_id from leads_tags WHERE tag_id = ?", 2).Scan(&IDs)
-
-	//How to make joins work?.Joins("Contacts")
-	if result := l.DB.Preload(clause.Associations).Order("updated_at desc").
-		Limit(limit).Offset(offset).Find(&cr.Leads, IDs).Count(&cr.Total); result.Error != nil {
-		return nil, result.Error
+	if filter.TagID != 0 {
+		IDs := []uint{}
+		l.DB.Raw("select lead_id from leads_tags WHERE tag_id = ?", filter.TagID).Scan(&IDs)
+		q = q.Find(&cr.Leads, IDs)
+	} else {
+		q = q.Find(&cr.Leads)
 	}
-	return cr, nil
-}
-
-func (l *Leads) ByContact(ID uint) (*models.LeadsResponse, error) {
-	// log.Println(limit, offset, query, query == "")
-	cr := &models.LeadsResponse{}
-	//How to make joins work?.Joins("Contacts")
-	if result := l.DB.Preload(clause.Associations).Order("updated_at desc").Where("contact_id = ?", ID).Find(&cr.Leads).Count(&cr.Total); result.Error != nil {
+	if result := q.Count(&cr.Total); result.Error != nil {
 		return nil, result.Error
 	}
 	return cr, nil

@@ -6,6 +6,7 @@ import (
 	"unicode"
 
 	"github.com/hromov/cdb/contacts"
+	"github.com/hromov/cdb/models"
 )
 
 func isInt(s string) bool {
@@ -17,14 +18,42 @@ func isInt(s string) bool {
 	return true
 }
 
-func BenchmarkFullSearch(b *testing.B) {
+func BenchmarkContacts(b *testing.B) {
 	db, err := Init(dsnForTests)
 	if err != nil {
 		log.Fatalf("Cant init data base error: %s", err.Error())
 	}
 	contacts := &contacts.Contacts{DB: db.DB}
 	for i := 0; i < b.N; i++ {
-		_, err := contacts.List(50, 0, "0674430")
+		_, err := contacts.List(models.ListFilter{Limit: 50, Offset: 0, Query: ""})
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func BenchmarkContactsPhoneSearch(b *testing.B) {
+	db, err := Init(dsnForTests)
+	if err != nil {
+		log.Fatalf("Cant init data base error: %s", err.Error())
+	}
+	contacts := &contacts.Contacts{DB: db.DB}
+	for i := 0; i < b.N; i++ {
+		_, err := contacts.List(models.ListFilter{Limit: 50, Offset: 0, Query: "067"})
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func BenchmarkContactsNameSearch(b *testing.B) {
+	db, err := Init(dsnForTests)
+	if err != nil {
+		log.Fatalf("Cant init data base error: %s", err.Error())
+	}
+	contacts := &contacts.Contacts{DB: db.DB}
+	for i := 0; i < b.N; i++ {
+		_, err := contacts.List(models.ListFilter{Limit: 50, Offset: 0, Query: "Петр"})
 		if err != nil {
 			panic(err)
 		}

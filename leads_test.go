@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/hromov/cdb/leads"
+	"github.com/hromov/cdb/models"
 )
 
 func BenchmarkLeads(b *testing.B) {
@@ -14,7 +15,7 @@ func BenchmarkLeads(b *testing.B) {
 	}
 	l := &leads.Leads{DB: db.DB}
 	for i := 0; i < b.N; i++ {
-		_, err := l.List(50, 0, "")
+		_, err := l.List(models.ListFilter{Limit: 50, Offset: 0, Query: ""})
 		if err != nil {
 			panic(err)
 		}

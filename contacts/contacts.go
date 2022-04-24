@@ -25,23 +25,27 @@ func digitsOnly(s string) bool {
 	return true
 }
 
-func (c *Contacts) List(limit, offset int, query string) (*models.ContactsResponse, error) {
-	// log.Println(limit, offset, query, query == "")
+func (c *Contacts) List(filter models.ListFilter) (*models.ContactsResponse, error) {
 	cr := &models.ContactsResponse{}
-	if query != "" {
+	q := c.DB.Preload(clause.Associations).Order("updated_at desc").Limit(int(filter.Limit)).Offset(int(filter.Offset))
+	if filter.Query != "" {
 		searchType := ""
-		if digitsOnly(query) {
+		if digitsOnly(filter.Query) {
 			searchType = phonesOnly
 		} else {
 			searchType = fullSearch
 		}
-		if result := c.DB.Preload(clause.Associations).Limit(limit).Offset(offset).Where(searchType, sql.Named("query", "%"+query+"%")).Order("updated_at desc").Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
-			return nil, result.Error
-		}
-		return cr, nil
+		q = q.Where(searchType, sql.Named("query", "%"+filter.Query+"%"))
+	}
+	if filter.TagID != 0 {
+		IDs := []uint{}
+		c.DB.Raw("select contact_id from contacts_tags WHERE tag_id = ?", filter.TagID).Scan(&IDs)
+		q = q.Find(&cr.Contacts, IDs)
+	} else {
+		q = q.Find(&cr.Contacts)
 	}
 
-	if result := c.DB.Preload(clause.Associations).Order("updated_at desc").Limit(limit).Offset(offset).Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
+	if result := q.Count(&cr.Total); result.Error != nil {
 		return nil, result.Error
 	}
 	return cr, nil
@@ -56,46 +60,3 @@ func (c *Contacts) ByID(ID uint64) (*models.Contact, error) {
 	}
 	return &contact, nil
 }
-
-// | name                   | varchar(32)      | YES  |     | NULL    |                |
-// | second_name            | varchar(32)      | YES  |     | NULL    |                |
-// | phone                  | varchar(32)      | YES  |     | NULL    |                |
-// | second_phone           | varchar(32)      | YES  |     | NULL    |                |
-// | email                  | varchar(128)     | YES  |     | NULL    |                |
-// | second_email           | varchar(128)     | YES  |     | NULL    |                |
-// | url                    | varchar(128)     | YES  |     | NULL    |                |
-// | city                   | varchar(128)     | YES  |     | NULL    |                |
-// | address                | varchar(256)     | YES  |     | NULL    |                |
-// | position				| varchar(128)     | YES  |     | NULL    |                |
-
-// func ContactsPhone(limit, offset int, query string) ([]Contact, error) {
-// 	// log.Println(limit, offset, query, query == "")
-// 	var contacts []Contact
-// 	if query != "" {
-// 		if result := db.Limit(limit).Offset(offset).Where("phone LIKE @query OR second_phone LIKE @query", sql.Named("query", "%"+query+"%")).Order("updated_at desc").Find(&contacts); result.Error != nil {
-// 			return nil, result.Error
-// 		}
-// 		return contacts, nil
-// 	}
-
-// 	if result := db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&contacts); result.Error != nil {
-// 		return nil, result.Error
-// 	}
-// 	return contacts, nil
-// }
-
-// func ContactsNamesAndPhone(limit, offset int, query string) ([]Contact, error) {
-// 	// log.Println(limit, offset, query, query == "")
-// 	var contacts []Contact
-// 	if query != "" {
-// 		if result := db.Limit(limit).Offset(offset).Where("name LIKE @query OR second_name LIKE @query OR phone LIKE @query OR second_phone LIKE @query", sql.Named("query", "%"+query+"%")).Order("updated_at desc").Find(&contacts); result.Error != nil {
-// 			return nil, result.Error
-// 		}
-// 		return contacts, nil
-// 	}
-
-// 	if result := db.Order("updated_at desc").Limit(limit).Offset(offset).Find(&contacts); result.Error != nil {
-// 		return nil, result.Error
-// 	}
-// 	return contacts, nil
-// }
