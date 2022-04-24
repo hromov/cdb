@@ -1,7 +1,6 @@
 package models
 
 import (
-	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
@@ -21,7 +20,7 @@ type Lead struct {
 	ID        uint64 `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	ClosedAt  sql.NullTime   `gorm:"index"`
+	ClosedAt  *time.Time     `gorm:"index"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Name      string         `gorm:"size:64"`
 	Budget    uint32
@@ -162,7 +161,7 @@ type Task struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	DeadLine  sql.NullTime   `gorm:"index"`
+	DeadLine  *time.Time     `gorm:"index"`
 	Completed bool
 
 	//if not - notice
