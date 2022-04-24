@@ -110,8 +110,11 @@ type User struct {
 }
 
 type Role struct {
-	ID   uint8  `gorm:"primaryKey"`
-	Role string `gorm:"unique;size:32"`
+	ID        uint8 `gorm:"primaryKey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Role      string         `gorm:"unique;size:32"`
 }
 
 type Step struct {
