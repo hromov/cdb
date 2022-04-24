@@ -122,17 +122,9 @@ func (m *Misc) Tag(ID uint8) (*models.Tag, error) {
 	return &item, nil
 }
 
-func (m *Misc) TasksByContact(ID uint) ([]models.Task, error) {
+func (m *Misc) TasksByParent(ID uint) ([]models.Task, error) {
 	var items []models.Task
-	if result := m.DB.Preload(clause.Associations).Order("created_at desc").Where("ContactID = ?", ID).Find(&items); result.Error != nil {
-		return nil, result.Error
-	}
-	return items, nil
-}
-
-func (m *Misc) TasksByLead(ID uint) ([]models.Task, error) {
-	var items []models.Task
-	if result := m.DB.Preload(clause.Associations).Order("created_at desc").Where("LeadID = ?", ID).Find(&items); result.Error != nil {
+	if result := m.DB.Preload(clause.Associations).Order("created_at desc").Where("ParentID = ?", ID).Find(&items); result.Error != nil {
 		return nil, result.Error
 	}
 	return items, nil

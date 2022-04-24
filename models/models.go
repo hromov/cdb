@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
@@ -35,8 +36,8 @@ type Lead struct {
 	SourceID       *uint8
 	Source         *Source
 	//google analytics
-	Tags  []Tag `gorm:"many2many:leads_tags;"`
-	Tasks []Task
+	Tags []Tag `gorm:"many2many:leads_tags;"`
+	// Tasks []Task
 
 	Analytics Analytics `gorm:"embedded;embeddedPrefix:analytics_"`
 }
@@ -61,8 +62,8 @@ type Contact struct {
 	CreatedID     *uint
 	Created       User `gorm:"foreignKey:CreatedID"`
 
-	Tags        []Tag `gorm:"many2many:contacts_tags;"`
-	Tasks       []Task
+	Tags []Tag `gorm:"many2many:contacts_tags;"`
+	// Tasks       []Task
 	Phone       string `gorm:"size:32"`
 	SecondPhone string `gorm:"size:32"`
 	Email       string `gorm:"size:128"`
@@ -156,18 +157,16 @@ type Tag struct {
 //Task & Notice
 type Task struct {
 	ID        uint `gorm:"primaryKey"`
+	ParentID  uint `gorm:"index"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	DeadLine  time.Time      `gorm:"index"`
+	DeadLine  sql.NullTime   `gorm:"index"`
 	Completed bool
 
 	//if not - notice
 	TaskTypeID *uint8
 	TaskType   TaskType
-
-	LeadID    uint `gorm:"index"`
-	ContactID uint `gorm:"index"`
 
 	//just links
 	Files       string `gorm:"size:512"`

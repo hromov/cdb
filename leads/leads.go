@@ -30,9 +30,13 @@ func (l *Leads) List(limit, offset int, query string) (*models.LeadsResponse, er
 
 func (l *Leads) ByTag(limit, offset int, TagID uint8) (*models.LeadsResponse, error) {
 	cr := &models.LeadsResponse{}
+
+	IDs := []uint{}
+	l.DB.Raw("select lead_id from leads_tags WHERE tag_id = ?", 2).Scan(&IDs)
+
 	//How to make joins work?.Joins("Contacts")
-	if result := l.DB.Preload(clause.Associations).Order("updated_at desc").Where("tags = ?", TagID).
-		Limit(limit).Offset(offset).Find(&cr.Leads).Count(&cr.Total); result.Error != nil {
+	if result := l.DB.Preload(clause.Associations).Order("updated_at desc").
+		Limit(limit).Offset(offset).Find(&cr.Leads, IDs).Count(&cr.Total); result.Error != nil {
 		return nil, result.Error
 	}
 	return cr, nil
