@@ -160,7 +160,7 @@ type Task struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	DeadLine  time.Time      `gorm:"index"`
-	Complete  bool
+	Completed bool
 
 	//if not - notice
 	TaskTypeID *uint8
