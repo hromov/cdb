@@ -51,7 +51,7 @@ func (c *Contacts) ByID(ID uint64) (*models.Contact, error) {
 	// log.Println(limit, offset, query, query == "")
 	var contact models.Contact
 
-	if result := c.DB.First(&contact, ID); result.Error != nil {
+	if result := c.DB.Preload(clause.Associations).First(&contact, ID); result.Error != nil {
 		return nil, result.Error
 	}
 	return &contact, nil

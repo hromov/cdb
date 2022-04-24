@@ -28,6 +28,16 @@ func (l *Leads) List(limit, offset int, query string) (*models.LeadsResponse, er
 	return cr, nil
 }
 
+func (l *Leads) ByTag(limit, offset int, TagID uint8) (*models.LeadsResponse, error) {
+	cr := &models.LeadsResponse{}
+	//How to make joins work?.Joins("Contacts")
+	if result := l.DB.Preload(clause.Associations).Order("updated_at desc").Where("tags = ?", TagID).
+		Limit(limit).Offset(offset).Find(&cr.Leads).Count(&cr.Total); result.Error != nil {
+		return nil, result.Error
+	}
+	return cr, nil
+}
+
 func (l *Leads) ByContact(ID uint) (*models.LeadsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
 	cr := &models.LeadsResponse{}
