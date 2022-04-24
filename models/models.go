@@ -159,17 +159,19 @@ type Task struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	DeadLine  time.Time
+	DeadLine  time.Time      `gorm:"index"`
+	Complete  bool
+
 	//if not - notice
 	TaskTypeID *uint8
 	TaskType   TaskType
 
-	UserID    uint
-	LeadID    uint
-	ContactID uint
+	LeadID    uint `gorm:"index"`
+	ContactID uint `gorm:"index"`
 
 	//just links
-	Files string `gorm:"size:512"`
+	Files       string `gorm:"size:512"`
+	Description string `gorm:"size:1024"`
 }
 
 type TaskType struct {

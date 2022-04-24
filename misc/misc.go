@@ -3,6 +3,7 @@ package misc
 import (
 	"github.com/hromov/cdb/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Misc struct {
@@ -99,6 +100,62 @@ func (m *Misc) Steps() ([]models.Step, error) {
 
 func (m *Misc) Step(ID uint8) (*models.Step, error) {
 	var item models.Step
+	if result := m.DB.First(&item, ID); result.Error != nil {
+		return nil, result.Error
+	}
+	return &item, nil
+}
+
+func (m *Misc) Tags() ([]models.Tag, error) {
+	var items []models.Tag
+	if result := m.DB.Find(&items); result.Error != nil {
+		return nil, result.Error
+	}
+	return items, nil
+}
+
+func (m *Misc) Tag(ID uint8) (*models.Tag, error) {
+	var item models.Tag
+	if result := m.DB.First(&item, ID); result.Error != nil {
+		return nil, result.Error
+	}
+	return &item, nil
+}
+
+func (m *Misc) TasksByContact(ID uint) ([]models.Task, error) {
+	var items []models.Task
+	if result := m.DB.Preload(clause.Associations).Order("created_at desc").Where("ContactID = ?", ID).Find(&items); result.Error != nil {
+		return nil, result.Error
+	}
+	return items, nil
+}
+
+func (m *Misc) TasksByLead(ID uint) ([]models.Task, error) {
+	var items []models.Task
+	if result := m.DB.Preload(clause.Associations).Order("created_at desc").Where("LeadID = ?", ID).Find(&items); result.Error != nil {
+		return nil, result.Error
+	}
+	return items, nil
+}
+
+func (m *Misc) Task(ID uint) (*models.Task, error) {
+	var item models.Task
+	if result := m.DB.Preload(clause.Associations).First(&item, ID); result.Error != nil {
+		return nil, result.Error
+	}
+	return &item, nil
+}
+
+func (m *Misc) TaskTypes() ([]models.TaskType, error) {
+	var items []models.TaskType
+	if result := m.DB.Find(&items); result.Error != nil {
+		return nil, result.Error
+	}
+	return items, nil
+}
+
+func (m *Misc) TaskType(ID uint8) (*models.TaskType, error) {
+	var item models.TaskType
 	if result := m.DB.First(&item, ID); result.Error != nil {
 		return nil, result.Error
 	}
