@@ -126,7 +126,7 @@ func (m *Misc) Tag(ID uint8) (*models.Tag, error) {
 func (m *Misc) Tasks(filter models.ListFilter) (*models.TasksResponse, error) {
 	cr := &models.TasksResponse{}
 	//How to make joins work?.Joins("Contacts")
-	q := m.DB.Joins("task_types").Order("created_at desc").Limit(filter.Limit).Offset(filter.Offset)
+	q := m.DB.Preload(clause.Associations).Order("created_at desc").Limit(filter.Limit).Offset(filter.Offset)
 	if filter.Query != "" {
 		q = q.Where("name LIKE ?", "%"+filter.Query+"%")
 	}
