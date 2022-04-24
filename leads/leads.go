@@ -15,8 +15,10 @@ func (l *Leads) List(limit, offset int, query string) (*models.LeadsResponse, er
 	cr := &models.LeadsResponse{}
 	//How to make joins work?.Joins("Contacts")
 	if query != "" {
-		if result := l.DB.Preload(clause.Associations).Order("updated_at desc").Where("name LIKE ?", "%"+query+"%").
-			Limit(limit).Offset(offset).Find(&cr.Leads).Count(&cr.Total); result.Error != nil {
+		q := l.DB.Preload(clause.Associations).Order("updated_at desc")
+		q = q.Where("name LIKE ?", "%"+query+"%")
+		q = q.Limit(limit).Offset(offset).Find(&cr.Leads)
+		if result := q.Count(&cr.Total); result.Error != nil {
 			return nil, result.Error
 
 		}
