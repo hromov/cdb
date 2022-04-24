@@ -6,6 +6,7 @@ import (
 
 	"github.com/hromov/cdb/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const fullSearch = "name LIKE @query OR second_name LIKE @query OR phone LIKE @query OR second_phone LIKE @query OR email LIKE @query OR second_email LIKE @query OR url LIKE @query OR city LIKE @query OR address LIKE @query OR position LIKE @query"
@@ -34,13 +35,13 @@ func (c *Contacts) List(limit, offset int, query string) (*models.ContactsRespon
 		} else {
 			searchType = fullSearch
 		}
-		if result := c.DB.Limit(limit).Offset(offset).Where(searchType, sql.Named("query", "%"+query+"%")).Order("updated_at desc").Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
+		if result := c.DB.Preload(clause.Associations).Limit(limit).Offset(offset).Where(searchType, sql.Named("query", "%"+query+"%")).Order("updated_at desc").Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
 			return nil, result.Error
 		}
 		return cr, nil
 	}
 
-	if result := c.DB.Order("updated_at desc").Limit(limit).Offset(offset).Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
+	if result := c.DB.Preload(clause.Associations).Order("updated_at desc").Limit(limit).Offset(offset).Find(&cr.Contacts).Count(&cr.Total); result.Error != nil {
 		return nil, result.Error
 	}
 	return cr, nil
