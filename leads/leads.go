@@ -24,6 +24,9 @@ func (l *Leads) List(filter models.ListFilter) (*models.LeadsResponse, error) {
 	if filter.Active {
 		q = q.Where("closed_at IS NULL")
 	}
+	if filter.StepID != 0 {
+		q = q.Where("step_id = ?", filter.StepID)
+	}
 	if filter.TagID != 0 {
 		IDs := []uint{}
 		l.DB.Raw("select lead_id from leads_tags WHERE tag_id = ?", filter.TagID).Scan(&IDs)

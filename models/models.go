@@ -15,6 +15,7 @@ type ListFilter struct {
 	Query     string
 	ParentID  uint64
 	Active    bool
+	StepID    uint8
 }
 
 type Lead struct {
