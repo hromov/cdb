@@ -14,7 +14,7 @@ func (l *Leads) List(filter models.ListFilter) (*models.LeadsResponse, error) {
 	// log.Println(limit, offset, query, query == "")
 	cr := &models.LeadsResponse{}
 	//How to make joins work?.Joins("Contacts")
-	q := l.DB.Preload(clause.Associations).Order("created_at desc").Limit(int(filter.Limit)).Offset(int(filter.Offset))
+	q := l.DB.Preload(clause.Associations).Order("created_at desc").Limit(filter.Limit).Offset(filter.Offset)
 	if filter.Query != "" {
 		q = q.Where("name LIKE ?", "%"+filter.Query+"%")
 	}

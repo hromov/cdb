@@ -27,7 +27,7 @@ func digitsOnly(s string) bool {
 
 func (c *Contacts) List(filter models.ListFilter) (*models.ContactsResponse, error) {
 	cr := &models.ContactsResponse{}
-	q := c.DB.Preload(clause.Associations).Order("created_at desc").Limit(int(filter.Limit)).Offset(int(filter.Offset))
+	q := c.DB.Preload(clause.Associations).Order("created_at desc").Limit(filter.Limit).Offset(filter.Offset)
 	if filter.Query != "" {
 		searchType := ""
 		if digitsOnly(filter.Query) {
