@@ -92,7 +92,7 @@ func (m *Misc) Manufacturer(ID uint16) (*models.Manufacturer, error) {
 
 func (m *Misc) Steps() ([]models.Step, error) {
 	var items []models.Step
-	if result := m.DB.Find(&items); result.Error != nil {
+	if result := m.DB.Order("order").Find(&items); result.Error != nil {
 		return nil, result.Error
 	}
 	return items, nil
