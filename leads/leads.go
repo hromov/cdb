@@ -22,7 +22,7 @@ func (l *Leads) List(filter models.ListFilter) (*models.LeadsResponse, error) {
 		q = q.Where("contact_id = ?", filter.ContactID)
 	}
 	if filter.Active {
-		q = q.Where("closed_at = ?", nil)
+		q = q.Where("closed_at IS NULL")
 	}
 	if filter.TagID != 0 {
 		IDs := []uint{}
