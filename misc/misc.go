@@ -34,7 +34,7 @@ func (m *Misc) Users() ([]models.User, error) {
 	return users, nil
 }
 
-func (m *Misc) User(ID uint) (*models.User, error) {
+func (m *Misc) User(ID uint64) (*models.User, error) {
 	var user models.User
 	if result := m.DB.Joins("Role").First(&user, ID); result.Error != nil {
 		return nil, result.Error
