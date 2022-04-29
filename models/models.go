@@ -180,6 +180,8 @@ type Task struct {
 	Responsible   User `gorm:"foreignKey:ResponsibleID"`
 	CreatedID     *uint64
 	Created       User `gorm:"foreignKey:CreatedID"`
+	UpdatedID     *uint64
+	Updated       User `gorm:"foreignKey:UpdatedID"`
 }
 
 type TasksResponse struct {
