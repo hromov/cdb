@@ -139,7 +139,7 @@ func (m *Misc) Tasks(filter models.ListFilter) (*models.TasksResponse, error) {
 	return cr, nil
 }
 
-func (m *Misc) Task(ID uint) (*models.Task, error) {
+func (m *Misc) Task(ID uint64) (*models.Task, error) {
 	var item models.Task
 	if result := m.DB.Preload(clause.Associations).First(&item, ID); result.Error != nil {
 		return nil, result.Error
