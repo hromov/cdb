@@ -174,6 +174,7 @@ type Task struct {
 	//just links
 	Files       string `gorm:"size:512"`
 	Description string `gorm:"size:1024"`
+	Results     string `gorm:"size:512"`
 }
 
 type TasksResponse struct {
