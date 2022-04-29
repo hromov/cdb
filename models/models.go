@@ -175,6 +175,11 @@ type Task struct {
 	Files       string `gorm:"size:512"`
 	Description string `gorm:"size:1024"`
 	Results     string `gorm:"size:512"`
+
+	ResponsibleID *uint64
+	Responsible   User `gorm:"foreignKey:ResponsibleID"`
+	CreatedID     *uint64
+	Created       User `gorm:"foreignKey:CreatedID"`
 }
 
 type TasksResponse struct {
