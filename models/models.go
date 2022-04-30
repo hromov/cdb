@@ -7,15 +7,16 @@ import (
 )
 
 type ListFilter struct {
-	Limit     int
-	Offset    int
-	LeadID    uint64
-	ContactID uint64
-	TagID     uint8
-	Query     string
-	ParentID  uint64
-	Active    bool
-	StepID    uint8
+	Limit         int
+	Offset        int
+	LeadID        uint64
+	ContactID     uint64
+	TagID         uint8
+	Query         string
+	ParentID      uint64
+	Active        bool
+	StepID        uint8
+	ResponsibleID uint64
 }
 
 type Lead struct {

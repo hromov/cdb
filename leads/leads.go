@@ -21,6 +21,9 @@ func (l *Leads) List(filter models.ListFilter) (*models.LeadsResponse, error) {
 	if filter.ContactID != 0 {
 		q = q.Where("contact_id = ?", filter.ContactID)
 	}
+	if filter.ResponsibleID != 0 {
+		q = q.Where("responsible_id = ?", filter.ResponsibleID)
+	}
 	if filter.Active {
 		q = q.Where("closed_at IS NULL")
 	}
